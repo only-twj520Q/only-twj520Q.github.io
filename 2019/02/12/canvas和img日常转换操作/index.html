@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>canvas和img日常转换操作 | Hexo</title>
+  <meta name="description" content="近在做图片上传，接触了一些图片相关的转化操作。主要涉及blob，canvas，dataurl。做一下笔记，以免时间长了忘记。 名词解释Blob Blob对象表示不可变的类似文件对象的原始数据。Blob表示不一定是JavaScript原生形式的数据。File接口基于Blob，继承了blob的功能并将其扩展使其支持用户系统的文件。 摘自MDN  和File对象的区别 File对象就是一个文件，当我们使">
+<meta name="keywords" content="JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="canvas和img日常转换操作">
+<meta property="og:url" content="https:&#x2F;&#x2F;github.com&#x2F;2019&#x2F;02&#x2F;12&#x2F;canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C&#x2F;index.html">
+<meta property="og:site_name" content="twj的个人小站">
+<meta property="og:description" content="近在做图片上传，接触了一些图片相关的转化操作。主要涉及blob，canvas，dataurl。做一下笔记，以免时间长了忘记。 名词解释Blob Blob对象表示不可变的类似文件对象的原始数据。Blob表示不一定是JavaScript原生形式的数据。File接口基于Blob，继承了blob的功能并将其扩展使其支持用户系统的文件。 摘自MDN  和File对象的区别 File对象就是一个文件，当我们使">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws3.sinaimg.cn&#x2F;large&#x2F;006tKfTcly1g1jvojadcqj30b702kjrn.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;mdn.mozillademos.org&#x2F;files&#x2F;225&#x2F;Canvas_drawimage.jpg">
+<meta property="og:updated_time" content="2019-11-22T06:45:20.551Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;ws3.sinaimg.cn&#x2F;large&#x2F;006tKfTcly1g1jvojadcqj30b702kjrn.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://github.com/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="twj的个人小站" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/only-twj520Q.github.io/css/style.css">
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css">
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/only-twj520Q" target="_blank">
+          <img class="img-circle img-rotate" src="/only-twj520Q.github.io/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Sunny_杰少</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">一枚帝都程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/only-twj520Q.github.io/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/only-twj520Q.github.io/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/only-twj520Q.github.io/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/only-twj520Q.github.io/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/only-twj520Q.github.io/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/only-twj520Q.github.io/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/only-twj520Q.github.io/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/only-twj520Q.github.io/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/only-twj520Q" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/u/6356069422" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/profile.php?id=100041542582495" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">8</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/Redux/" rel="tag">Redux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" rel="tag">打包构建</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/only-twj520Q.github.io/tags/JavaScript/" style="font-size: 14px;">JavaScript</a> <a href="/only-twj520Q.github.io/tags/Redux/" style="font-size: 13px;">Redux</a> <a href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" style="font-size: 13px;">性能优化</a> <a href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" style="font-size: 13px;">打包构建</a> <a href="/only-twj520Q.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/02/">二月 2019</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/" class="title">我理解的babel</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T07:12:55.975Z" itemprop="datePublished">2019-11-08</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/03/24/%E5%BC%82%E6%AD%A5%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="title">异步错误的获取</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-03-24T05:47:16.101Z" itemprop="datePublished">2019-03-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/03/09/Promise%E6%9D%82%E8%B0%88/" class="title">Promise杂谈</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-03-09T05:34:08.260Z" itemprop="datePublished">2019-03-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/" class="title">canvas和img日常转换操作</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" class="title">前端性能监控</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-canvas和img日常转换操作" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      canvas和img日常转换操作
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/only-twj520Q.github.io/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/" class="article-date">
+	  <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/only-twj520Q.github.io/tags/JavaScript/" rel="tag">JavaScript</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/only-twj520Q.github.io/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 1.8k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 6(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <p>近在做图片上传，接触了一些图片相关的转化操作。主要涉及blob，canvas，dataurl。做一下笔记，以免时间长了忘记。</p>
+<h2 id="名词解释"><a href="#名词解释" class="headerlink" title="名词解释"></a>名词解释</h2><h3 id="Blob"><a href="#Blob" class="headerlink" title="Blob"></a>Blob</h3><blockquote>
+<p>Blob对象表示不可变的类似文件对象的原始数据。Blob表示不一定是JavaScript原生形式的数据。File接口基于Blob，继承了blob的功能并将其扩展使其支持用户系统的文件。</p>
+<p>摘自MDN</p>
+</blockquote>
+<p>和<strong>File对象</strong>的区别</p>
+<p>File对象就是一个文件，当我们使用<code>input type=&quot;file&quot;</code>标签来上传文件，我们在代码里得到的对象就是一个File对象。</p>
+<p>Blob对象就是二进制数据，用来包装二进制文件的容器，可以通过<code>new Blob()</code>创建的对象就是Blob对象。又比如，在XMLHttpRequest里，如果指定responseType为blob，那么得到的返回值也是一个blob对象。</p>
+<p>File继承于Blob</p>
+<h3 id="fileReader"><a href="#fileReader" class="headerlink" title="fileReader"></a>fileReader</h3><blockquote>
+<p>fileReader对象允许Web应用程序异步读取存储在计算机上的文件（原始数据缓冲区）的内容，使用File或Blob对象指定要读取的文件或数据。</p>
+<p>摘自MDN</p>
+</blockquote>
+<p><code>FileReader</code>是用来读取内存中的文件的API，支持<code>File</code>和<code>Blob</code>两种格式。</p>
+<h2 id="转化关系"><a href="#转化关系" class="headerlink" title="转化关系"></a>转化关系</h2><p>这边从使用场景出发，来整理一下。</p>
+<h3 id="file转化为DataURL"><a href="#file转化为DataURL" class="headerlink" title="file转化为DataURL"></a>file转化为DataURL</h3><p><strong>场景</strong>： 获取到一个file类型的图片，直接在页面中预览。如果等图片上传完服务器返回图片的地址，再赋值给img的src属性，无疑浪费了时间和带宽。如果直接在html中预览？这里就是利用html5的新特性，将图片转换为Base64的形式显示出来。</p>
+<p>下面的方法可以用于在浏览器上预览本地图片或者视频。</p>
+<h4 id="方法1：URL-createObjectURL"><a href="#方法1：URL-createObjectURL" class="headerlink" title="方法1：URL.createObjectURL"></a>方法1：URL.createObjectURL</h4><p>该方法会根据传入的参数创建一个指向该参数对象的URL，这个URL是一个基于当前文件并且存储在内存中的<code>URL</code>，直到document触发了unload事件或者执行revokeObjectURL来释放。</p>
+<p>可以用于在浏览器上预览本地图片或者视频</p>
+<p><strong>使用方法如下</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objectURL = URL.createObjectURL(param);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数：可以为File或者Blob对象</li>
+<li>返回：一段带hash的url，类似<code>blob:null/2c5e93e3-f06e-4bf2-8942-1708759bf7a7</code></li>
+</ul>
+<p><strong>注意</strong>：在每次调用 <code>createObjectURL()</code>方法时，都会创建一个新的 URL 对象。当不再需要这些 URL 对象时，每个对象必须通过调用<code>URL.revokeObjectURL()</code>方法来释放，让浏览器知道这个URL已经不再需要指向对应的文件。<code>URL.revokeObjectURL()</code>方法会释放一个通过<code>URL.createObjectURL()</code>创建的对象URL。浏览器关闭后自动释放这个对象，但是为了获得最佳性能和内存使用状况，你应该在安全的时机主动释放掉它们。</p>
+<p>代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> img = <span class="built_in">document</span>.createElement(<span class="string">"img"</span>);</span><br><span class="line">img.src = <span class="built_in">window</span>.URL.createObjectURL(files[i]);</span><br><span class="line">img.width = <span class="number">200</span>;</span><br><span class="line">img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">	<span class="built_in">window</span>.URL.revokeObjectURL(<span class="keyword">this</span>.src);</span><br><span class="line">&#125;</span><br><span class="line"><span class="built_in">document</span>.body.appendChild(img);</span><br></pre></td></tr></table></figure>
+
+<h4 id="方法2：FileReader-readAsDataURL"><a href="#方法2：FileReader-readAsDataURL" class="headerlink" title="方法2：FileReader.readAsDataURL"></a>方法2：FileReader.readAsDataURL</h4><p>该方法会读取指定的 Blob 或 File 对象。读取操作完成的时候，readyState 会变成已完成（DONE），并触发 loadend 事件，同时 result 属性将包含一个data:URL格式的字符串（base64编码）以表示所读取文件的内容。</p>
+<p><strong>使用方法如下</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">FileReader.readAsDataURL(blob);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数：可以为File或者Blob对象</li>
+<li>返回：图片的base64编码。类似<code>data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIA</code></li>
+</ul>
+<p>代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">let</span> reader = <span class="keyword">new</span> FileReader();</span><br><span class="line">reader.onload = <span class="function"><span class="keyword">function</span>(<span class="params">e</span>) </span>&#123;</span><br><span class="line">  <span class="comment">// result属性是包含data:URL格式的字符串（base64编码）表示读取的文件内容</span></span><br><span class="line">  img.src = e.target.result;</span><br><span class="line">  img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    dosomething()</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// 读取file对象</span></span><br><span class="line">reader.readAsDataURL(files[i]);</span><br></pre></td></tr></table></figure>
+
+<h4 id="两种方法的区别"><a href="#两种方法的区别" class="headerlink" title="两种方法的区别"></a>两种方法的区别</h4><p>1、执行时机</p>
+<ul>
+<li><code>createObjectURL</code>是同步执行（立即的）</li>
+<li><code>FileReader.readAsDataURL</code>是异步执行</li>
+</ul>
+<p>2、内存使用</p>
+<ul>
+<li><code>createObjectURL</code>返回一段带<code>hash</code>的<code>url</code>，并且一直存储在内存中。</li>
+<li><code>FileReader.readAsDataURL</code>则返回包含很多字符的<code>base64</code>，并会比<code>blob url</code>消耗更多内存，但是在不用的时候会自动从内存中清除（通过垃圾回收机制）</li>
+</ul>
+<p>3、兼容性</p>
+<ul>
+<li><code>createObjectURL</code>支持从IE10往上的所有现代浏览器</li>
+<li><code>FileReader.readAsDataURL</code>同样支持从IE10往上的所有现代浏览器</li>
+</ul>
+<p>从上面答案不难看出，两者的优劣势</p>
+<ul>
+<li><p>使用<code>createObjectURL</code>可以节省性能并更快速，只不过需要在不使用的情况下手动释放内存</p>
+</li>
+<li><p>如果不太在意设备性能问题，并想获取图片的<code>base64</code>，则推荐使用</p>
+</li>
+</ul>
+<h2 id="canvas-转化为DataURL"><a href="#canvas-转化为DataURL" class="headerlink" title="canvas 转化为DataURL"></a>canvas 转化为DataURL</h2><p><strong>场景</strong>： canvas画出来的图片，需要在其它地方预览或者作为组件之间通信的参数。</p>
+<p><strong>使用方法如下</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">canvas.toDataURL(type, encoderOptions);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数：<ul>
+<li>type：图片格式，默认为 <code>image/png</code></li>
+<li>encoderOptions：在指定图片格式为 <code>image/jpeg</code>或<code>image/webp</code>的情况下，可以从 0 到 1 的区间内选择图片的质量。如果超出取值范围，将会使用默认值 <code>0.92</code>。其他参数会被忽略。</li>
+</ul>
+</li>
+<li>返回：图片的base64编码。类似<code>data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEASABIA</code></li>
+</ul>
+<p>使用</p>
+<ul>
+<li>当一个内容画到canvas上时，我们可以将它生成任何一个格式支持的图片文件。</li>
+<li>这个方法也可以用来对图片进行格式转化。比如，file(png格式) -&gt; canvas -&gt; base64(webp格式)，参考下图。</li>
+<li>这个方法还可以用来压缩图片。</li>
+</ul>
+<p><img src="https://ws3.sinaimg.cn/large/006tKfTcly1g1jvojadcqj30b702kjrn.jpg" alt=""></p>
+<h2 id="canvas-转化为blob"><a href="#canvas-转化为blob" class="headerlink" title="canvas 转化为blob"></a>canvas 转化为blob</h2><p><strong>场景</strong>： canvas画出来的图片，或者利用canvas完成截图功能之后，我们需要把对应的文件上传到服务器。</p>
+<p><strong>使用方法如下</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">canvas.toBlob(callback, type, encoderOptions);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数：<ul>
+<li>callback：回调函数，可获得一个单独的<code>Blob</code>对象参数</li>
+<li>type：<code>DOMString</code>类型，指定图片格式，默认格式为<code>image/png</code></li>
+<li>encoderOptions：<code>Number</code>类型，值在0与1之间，当请求图片格式为<code>image/jpeg或者``image/webp时用来指定图片展示质量。如果这个参数的值不在指定类型与范围之内，则使用默认值，其余参数将被忽略。</code></li>
+</ul>
+</li>
+<li>返回：无返回值</li>
+</ul>
+<p>得到Blob对象以后，可以利用XML2的<code>FormData</code>对象上传，模拟表单控件，异步上传这个二进制文件。</p>
+<p>代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">canvas.toBlob &amp;&amp; canvas.toBlob(<span class="function"><span class="keyword">function</span>(<span class="params">blob</span>) </span>&#123;</span><br><span class="line">　<span class="keyword">let</span> myForm = <span class="keyword">new</span> FormData();</span><br><span class="line">	myForm.append(<span class="string">'image'</span>, blob); <span class="comment">//向表单中添加一个键值对</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="DataURL或img转canvas"><a href="#DataURL或img转canvas" class="headerlink" title="DataURL或img转canvas"></a>DataURL或img转canvas</h2><p><strong>场景</strong>： 想要对图片想要进行一些操作，比如加蒙层，修饰，裁剪等等，这些操作可以利用canvas的特性去完成。</p>
+<p><strong>使用方法如下</strong></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">context.drawImage(img,sx,sy,swidth,sheight,x,y,width,height);</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>参数<ul>
+<li>image：绘制到上下文的元素。</li>
+<li>sx：需要绘制到目标上下文中的，<code>image</code>的矩形（裁剪）选择框的左上角 X 轴坐标。</li>
+<li>sy：需要绘制到目标上下文中的，<code>image</code>的矩形（裁剪）选择框的左上角 Y 轴坐标。</li>
+<li>swidth：需要绘制到目标上下文中的，<code>image</code>的矩形（裁剪）选择框的宽度。如果不说明，整个矩形（裁剪）从坐标的<code>sx</code>和<code>sy</code>开始，到<code>image</code>的右下角结束。</li>
+<li>sheight：需要绘制到目标上下文中的，<code>image</code>的矩形（裁剪）选择框的高度。</li>
+</ul>
+</li>
+</ul>
+<p><img src="https://mdn.mozillademos.org/files/225/Canvas_drawimage.jpg" alt="drawImage"></p>
+<p>代码如下</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">dataURLToCanvas</span>(<span class="params">dataurl</span>)</span>&#123;</span><br><span class="line">	<span class="keyword">let</span> canvas = <span class="built_in">document</span>.createElement(<span class="string">'canvas'</span>);</span><br><span class="line">	<span class="keyword">let</span> ctx = canvas.getContext(<span class="string">'2d'</span>);</span><br><span class="line">	<span class="keyword">let</span> img = <span class="keyword">new</span> Image();</span><br><span class="line">	img.onload = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line">		canvas.width = img.width;</span><br><span class="line">		canvas.height = img.height;</span><br><span class="line">		ctx.drawImage(img, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">	&#125;;</span><br><span class="line">	img.src = dataurl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://github.com/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/" title="canvas和img日常转换操作" target="_blank" rel="external">https://github.com/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/only-twj520Q" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/only-twj520Q.github.io/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/only-twj520Q" target="_blank"><span class="text-dark">Sunny_杰少</span><small class="ml-1x">一枚帝都程序猿</small></a></h3>
+        <div>喜欢唱，不喜欢跳，喜欢篮球，但不喜欢rap的宅男</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/only-twj520Q.github.io/2019/03/09/Promise%E6%9D%82%E8%B0%88/" title="Promise杂谈"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/only-twj520Q.github.io/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" title="前端性能监控"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/only-twj520Q.github.io/images/donate/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/only-twj520Q.github.io/images/donate/wechatpayimg.jpg" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/only-twj520Q" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/u/6356069422" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/profile.php?id=100041542582495" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/only-twj520Q.github.io/js/plugin.min.js"></script>
+<script src="/only-twj520Q.github.io/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/only-twj520Q.github.io/',
+        CONTENT_URL: '/only-twj520Q.github.io/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/only-twj520Q.github.io/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+<script src="//cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js"></script>
+<script>
+var gitment = new Gitment({
+  // id默认为当前页面url，如果url后带参数或锚点，gitment要重新初始化
+  // https://github.com/imsun/gitment/issues/55
+  // 解决方案：id:window.location.pathname,或者将id设置为当前页面标题
+  id: 'canvas和img日常转换操作', 
+  owner: '32264536', // 可以是你的GitHub用户名，也可以是github id
+  repo: '',
+  oauth: {
+    client_id: '',
+    client_secret: '',
+  }
+})
+gitment.render('comments')
+</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

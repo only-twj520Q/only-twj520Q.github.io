@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>前端性能监控 | Hexo</title>
+  <meta name="description" content="前言前端性能关系到页面的用户体验，页面的用户体验影响了产品的留存率，而产品则直接决定了一个公司的生死存亡。 Global Web Performance Matters for ecommerce的报告中指出：   57%的用户更在乎网页在3秒内是否完成加载。  52%的在线用户认为网页打开速度影响到他们对网站的忠实度。  每慢1秒造成页面 PV 降低11%，用户满意度也随之降低降低16%。  近">
+<meta name="keywords" content="性能优化">
+<meta property="og:type" content="article">
+<meta property="og:title" content="前端性能监控">
+<meta property="og:url" content="https:&#x2F;&#x2F;github.com&#x2F;2019&#x2F;02&#x2F;12&#x2F;%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7&#x2F;index.html">
+<meta property="og:site_name" content="twj的个人小站">
+<meta property="og:description" content="前言前端性能关系到页面的用户体验，页面的用户体验影响了产品的留存率，而产品则直接决定了一个公司的生死存亡。 Global Web Performance Matters for ecommerce的报告中指出：   57%的用户更在乎网页在3秒内是否完成加载。  52%的在线用户认为网页打开速度影响到他们对网站的忠实度。  每慢1秒造成页面 PV 降低11%，用户满意度也随之降低降低16%。  近">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws1.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26v7nngpij30ys0ligo1.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws4.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26mno2un2j30sx08l0uw.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws2.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26ndj4g0rj30jf0f9ju2.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws3.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26n2g4tg3j30m80cygpg.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws4.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26sdstdhyj30f602rglq.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws3.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26sg5cw81j30i0036t8z.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws4.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26sgn7ggej30jb09mt9p.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws3.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26t549skdj30r60gx42w.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;ws4.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26t8gosztj30op0f8gpe.jpg">
+<meta property="og:updated_time" content="2019-11-22T06:42:54.025Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;ws1.sinaimg.cn&#x2F;large&#x2F;006tNc79ly1g26v7nngpij30ys0ligo1.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://github.com/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="twj的个人小站" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/only-twj520Q.github.io/css/style.css">
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css">
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/only-twj520Q" target="_blank">
+          <img class="img-circle img-rotate" src="/only-twj520Q.github.io/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Sunny_杰少</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">一枚帝都程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/only-twj520Q.github.io/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/only-twj520Q.github.io/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/only-twj520Q.github.io/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/only-twj520Q.github.io/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/only-twj520Q.github.io/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/only-twj520Q.github.io/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/only-twj520Q.github.io/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/only-twj520Q.github.io/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/only-twj520Q" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/u/6356069422" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/profile.php?id=100041542582495" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">8</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/Redux/" rel="tag">Redux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" rel="tag">打包构建</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/only-twj520Q.github.io/tags/JavaScript/" style="font-size: 14px;">JavaScript</a> <a href="/only-twj520Q.github.io/tags/Redux/" style="font-size: 13px;">Redux</a> <a href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" style="font-size: 13px;">性能优化</a> <a href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" style="font-size: 13px;">打包构建</a> <a href="/only-twj520Q.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/02/">二月 2019</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/" class="title">我理解的babel</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T07:12:55.975Z" itemprop="datePublished">2019-11-08</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/03/24/%E5%BC%82%E6%AD%A5%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="title">异步错误的获取</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-03-24T05:47:16.101Z" itemprop="datePublished">2019-03-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/03/09/Promise%E6%9D%82%E8%B0%88/" class="title">Promise杂谈</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-03-09T05:34:08.260Z" itemprop="datePublished">2019-03-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/" class="title">canvas和img日常转换操作</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" class="title">前端性能监控</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-前端性能监控" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      前端性能监控
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/only-twj520Q.github.io/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" class="article-date">
+	  <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/only-twj520Q.github.io/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 2.8k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 10(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>前端性能关系到页面的用户体验，页面的用户体验影响了产品的留存率，而产品则直接决定了一个公司的生死存亡。</p>
+<p>Global Web Performance Matters for ecommerce的报告中指出：</p>
+<p><img src="https://ws1.sinaimg.cn/large/006tNc79ly1g26v7nngpij30ys0ligo1.jpg" alt=""></p>
+<ul>
+<li><p>57%的用户更在乎网页在3秒内是否完成加载。</p>
+</li>
+<li><p>52%的在线用户认为网页打开速度影响到他们对网站的忠实度。</p>
+</li>
+<li><p>每慢1秒造成页面 PV 降低11%，用户满意度也随之降低降低16%。</p>
+</li>
+<li><p>近半数移动用户因为在10秒内仍未打开页面从而放弃。</p>
+</li>
+</ul>
+<p>在我们做前端性能优化的时候，我们必须知道我们所做的优化到底能提升多少性能，这时候就有必要对前端性能进行监控。当然，我们现在这边讨论的前端性能，是关于页面加载和延迟方面的性能，暂时不讨论对错误处理的相关内容。</p>
+<h2 id="Performance"><a href="#Performance" class="headerlink" title="Performance"></a>Performance</h2><p>首先简单介绍一下前端相关的性能指标，我们关注的几个指标如下。</p>
+<ul>
+<li>白屏时间 = 地址栏输入URL回车 - 浏览器出现第一个元素</li>
+<li>首屏时间 = 地址栏输入URL回车 - 浏览器第一屏渲染完成</li>
+<li>用户可操作时间</li>
+<li>页面总下载时间</li>
+</ul>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g26mno2un2j30sx08l0uw.jpg" alt=""></p>
+<p>对开发人员而言，我们常用的性能指标API就是Performance。Performance 接口可以获取到当前页面与性能相关的信息。</p>
+<p>我们使用<code>window.performance</code>就可以获得 performance对象。</p>
+<p>在控制台我们打印performance，可以看到performance对象包含五个属性。</p>
+<ul>
+<li><p>navigation 提供了在指定的时间段里发生的操作相关信息，包括页面是加载还是刷新、发生了多少次重定向等等。</p>
+</li>
+<li><p>timing 对象包含延迟相关的性能信息，也是这次我们需要</p>
+</li>
+<li><p>memory 对象</p>
+<ul>
+<li>jsHeapSizeLimit: 内存大小限制</li>
+<li>totalJSHeapSize: 可使用的内存</li>
+<li>usedJSHeapSize: JS 对象占用的内存</li>
+</ul>
+</li>
+<li><p>timeOrigin 返回性能测量开始时的时间的高精度时间戳</p>
+</li>
+</ul>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79ly1g26ndj4g0rj30jf0f9ju2.jpg" alt=""></p>
+<p>这些字段的含义与浏览器对应的状态如下</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1g26n2g4tg3j30m80cygpg.jpg" alt=""></p>
+<p>如图，以responseEnd为分界点。图中的红线的左半部分代表网络传输层面，右半部分代表浏览器解析和渲染相关相关。</p>
+<p>我这边先给出上述字段的含义，个人认为比较重要的节点加粗了</p>
+<ul>
+<li><strong>navigationStart: 表示从上一个文档卸载结束时的 unix 时间戳，如果没有上一个文档，这个值将和 fetchStart 相等</strong>。</li>
+<li>unloadEventStart: 表示前一个网页（与当前页面同域）unload 的时间戳，如果无前一个网页 unload 或者前一个网页与当前页面不同域，则值为 0。</li>
+<li>unloadEventEnd: 返回前一个页面 unload 时间绑定的回掉函数执行完毕的时间戳。</li>
+<li>redirectStart: 第一个 HTTP 重定向发生时的时间。有跳转且是同域名内的重定向才算，否则值为 0。</li>
+<li>redirectEnd: 最后一个 HTTP 重定向完成时的时间。有跳转且是同域名内部的重定向才算，否则值为 0。</li>
+<li><strong>fetchStart: 浏览器准备好使用 HTTP 请求抓取文档的时间，这发生在检查本地缓存之前</strong>。</li>
+<li>domainLookupStart/domainLookupEnd: DNS 域名查询开始/结束的时间，如果使用了本地缓存（即无 DNS 查询）或持久连接，则与 fetchStart 值相等</li>
+<li>connectStart: HTTP（TCP）开始/重新 建立连接的时间，如果是持久连接，则与 fetchStart 值相等。</li>
+<li>connectEnd: HTTP（TCP） 完成建立连接的时间（完成握手），如果是持久连接，则与 fetchStart 值相等。</li>
+<li>secureConnectionStart: HTTPS 连接开始的时间，如果不是安全连接，则值为 0。</li>
+<li>requestStart: HTTP 请求读取真实文档开始的时间（完成建立连接），包括从本地读取缓存。</li>
+<li><strong>responseStart: HTTP 开始接收响应的时间（获取到第一个字节），包括从本地读取缓存</strong>。</li>
+<li><strong>responseEnd: HTTP 响应全部接收完成的时间（获取到最后一个字节），包括从本地读取缓存</strong>。</li>
+<li>domLoading: 开始解析渲染 DOM 树的时间，此时 Document.readyState 变为 loading，并将抛出 readystatechange 相关事件。</li>
+<li>domInteractive: 完成解析 DOM 树的时间，Document.readyState 变为 interactive，并将抛出 readystatechange 相关事件，注意只是 DOM 树解析完成，这时候并没有开始加载网页内的资源。</li>
+<li><strong>domContentLoadedEventStart: DOM 解析完成后，网页内资源加载开始的时间，在 DOMContentLoaded 事件抛出前发生。</strong></li>
+<li><strong>domContentLoadedEventEnd: DOM 解析完成后，网页内资源加载完成的时间（如 JS 脚本加载执行完毕）。</strong></li>
+<li>domComplete: DOM 树解析完成，且资源也准备就绪的时间，Document.readyState 变为 complete，并将抛出 readystatechange 相关事件。</li>
+<li><strong>loadEventStart: load 事件发送给文档，也即 load 回调函数开始执行的时间。</strong></li>
+<li><strong>loadEventEnd: load 事件的回调函数执行完毕的时间。</strong></li>
+</ul>
+<p>(1) DOMContentLoaded 是指页面元素加载完毕，但是一些资源比如图片还无法看到，但是这个时候页面是可以正常交互的，比如滚动，输入字符等。 jQuery 中经常使用的 <code>$(document).ready()</code> 其实监听的就是 DOMContentLoaded 事件。</p>
+<p>(2) load 是指页面上所有的资源（图片，音频，视频等）加载完成。jQuery 中 <code>$(document).load()</code> 监听的是 load 事件。</p>
+<h2 id="实战测试"><a href="#实战测试" class="headerlink" title="实战测试"></a>实战测试</h2><p>由于上面的一些字段解释源于网上的文档和资料，所以我自己需要做一些代码上的测试。</p>
+<h4 id="一、-domContentLoadedEventStart-和-domContentLoadedEventEnd-区别"><a href="#一、-domContentLoadedEventStart-和-domContentLoadedEventEnd-区别" class="headerlink" title="一、 domContentLoadedEventStart 和 domContentLoadedEventEnd 区别"></a>一、 <strong>domContentLoadedEventStart</strong> 和 <strong>domContentLoadedEventEnd</strong> 区别</h4><p>代码如下，我们计算了<strong>DOMContentLoaded</strong>的回调执行时间。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">window</span>.addEventListener(<span class="string">'DOMContentLoaded'</span>, () =&gt; &#123;</span><br><span class="line">  <span class="built_in">console</span>.time(<span class="string">'DOMContentLoaded'</span>)</span><br><span class="line">  <span class="keyword">for</span> (<span class="keyword">let</span> i=<span class="number">0</span>;i&lt;<span class="number">1000000000</span>;i++)&#123;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="built_in">console</span>.timeEnd(<span class="string">'DOMContentLoaded'</span>)</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+
+<p>在浏览器控制台，我们打印了这两个字段的差值（时间差）。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g26sdstdhyj30f602rglq.jpg" alt=""></p>
+<p>结论：两个字段的差值刚好等于<strong>DOMContentLoaded</strong>的回调执行时间，网上关于字段的解释正确。并且，真正触发<strong>DOMContentLoaded</strong>事件应该是<strong>domContentLoadedEventStart</strong>对应的时间。</p>
+<h4 id="二、DOMContentLoaded-是对应domContentLoadedEventStart-和-domContentLoadedEventEnd-哪个字段。"><a href="#二、DOMContentLoaded-是对应domContentLoadedEventStart-和-domContentLoadedEventEnd-哪个字段。" class="headerlink" title="二、DOMContentLoaded 是对应domContentLoadedEventStart 和 domContentLoadedEventEnd 哪个字段。"></a>二、DOMContentLoaded 是对应<strong>domContentLoadedEventStart</strong> 和 <strong>domContentLoadedEventEnd</strong> 哪个字段。</h4><p>在浏览器控制台，我们打印了它和<strong>navigationStart</strong>的差值。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1g26sg5cw81j30i0036t8z.jpg" alt=""></p>
+<p>在浏览器network的下面，我们看到显示的DOMContentLoaded时间是1.41秒</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g26sgn7ggej30jb09mt9p.jpg" alt=""></p>
+<p>结论：浏览器上的<strong>DOMContentLoaded</strong>的时间实际代表的是<strong>domContentLoadedEventEnd</strong> 的时间。</p>
+<p>####三、 当前网页load事件还没有发生，返回0。</p>
+<p>在<strong>DOMContentLoaded</strong>事件的回调里，我们发现<strong>loadEventStart</strong>和<strong>loadEventEnd</strong>都是0。</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79ly1g26t549skdj30r60gx42w.jpg" alt=""></p>
+<p>在load事件的回调里，我们发现loadEventStart有值，loadEventEnd是0。</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79ly1g26t8gosztj30op0f8gpe.jpg" alt=""></p>
+<p>结论：如果需要计算load的时间的话，一定要注意代码在页面load事件触发以后再去计算。</p>
+<h2 id="性能指标的计算"><a href="#性能指标的计算" class="headerlink" title="性能指标的计算"></a>性能指标的计算</h2><h4 id="一、白屏时间"><a href="#一、白屏时间" class="headerlink" title="一、白屏时间"></a>一、白屏时间</h4><p>再明确一下白屏时间的定义，用户从打开页面开始到页面开始有东西呈现为止。</p>
+<p><strong>如果是chrome高版本，直接可以通过下面代码获得</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 白屏时间</span><br><span class="line">(chrome.loadTimes().firstPaintTime - chrome.loadTimes().startLoadTime)*1000;</span><br></pre></td></tr></table></figure>
+
+<p><strong>如果是没有该API的普通浏览器</strong></p>
+<p>我们通常认为浏览器开始渲染 <code>&lt;body&gt;</code> 或者解析完 <code>&lt;head&gt;</code> 的时间是白屏结束的时间点。</p>
+<p>所以，白屏时间 = 开始渲染时间 + 头部资源加载时间</p>
+<h5 id="1、开始渲染时间"><a href="#1、开始渲染时间" class="headerlink" title="1、开始渲染时间"></a>1、开始渲染时间</h5><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//开始渲染时间</span></span><br><span class="line">startTime = performance.timing.domLoading - performance.timing.navigationStart;</span><br></pre></td></tr></table></figure>
+
+<h5 id="2、头部资源加载时间"><a href="#2、头部资源加载时间" class="headerlink" title="2、头部资源加载时间"></a>2、头部资源加载时间</h5><p>我们在<code>&lt;head&gt;</code>的前面计时开始，在<code>&lt;head&gt;</code>最末尾计时结束，中间的差值就是头部资源加载时间。</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE html&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">"utf-8"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">meta</span> <span class="attr">name</span>=<span class="string">"viewport"</span> <span class="attr">content</span>=<span class="string">"width=device-width,initial-scale=1"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">      <span class="keyword">var</span> start_time = <span class="keyword">new</span> <span class="built_in">Date</span>; <span class="comment">//测试时间起点，实际统计起点为 DNS 查询</span></span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">for</span>(<span class="keyword">let</span> i=<span class="number">0</span>; i&lt;<span class="number">10000000000</span>; i++)&#123;</span></span><br><span class="line">    &#125;</span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- 页面 CSS 资源 --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"xx.css"</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="javascript">    <span class="keyword">var</span> end_time = +<span class="keyword">new</span> <span class="built_in">Date</span>; <span class="comment">//时间终点</span></span></span><br><span class="line"><span class="actionscript">    <span class="keyword">var</span> headTime = end_time - start_time; <span class="comment">//头部资源加载时间</span></span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>所以最终，白屏时间 =  开始渲染时间(startTime) + 头部资源加载时间(headTime)</p>
+<h4 id="二、首屏时间"><a href="#二、首屏时间" class="headerlink" title="二、首屏时间"></a>二、首屏时间</h4><p>再明确一下首屏时间的定义，用户浏览器首屏内所有内容都呈现出来所花费的时间。</p>
+<p>影响首屏的主要因素是图片的加载。基本流程如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">首屏位置调用 API 开始统计 -&gt; 绑定首屏内所有图片的 load 事件 -&gt; 页面加载完后判断图片是否在首屏内，找出加载最慢的一张 -&gt; 首屏时间</span><br></pre></td></tr></table></figure>
+
+<p>对于网页高度小于屏幕的网站来说，只要在页面底部加上脚本打印当前时间即可；或者对于网页高度大于一屏的网页来说，只要在估算接近于一屏幕的元素的位置后，打印一下当前时间。当然这个时间要得把首屏中所有图片的加载时间也算上。</p>
+<h4 id="三、用户可操作时间"><a href="#三、用户可操作时间" class="headerlink" title="三、用户可操作时间"></a>三、用户可操作时间</h4><p><strong>用户可操作时间</strong>影响交互体验，通常我们把所有事件的绑定都放在domReady以后，所以用户可操作的时间可以等于DOM解析完毕的时间。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">用户可操作时间 = performance.timing.domInteractive - performance.timing.navigationStart</span><br></pre></td></tr></table></figure>
+
+<h4 id="四、页面总下载时间"><a href="#四、页面总下载时间" class="headerlink" title="四、页面总下载时间"></a>四、页面总下载时间</h4><p><strong>页面总下载时间</strong>可以统计<strong>onload</strong>时间，load事件必须等到页面内包括图片的所有元素加载完毕后才能触发。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">页面总下载时间 = performance.timing.loadEventEnd - performance.timing.navigationStart</span><br></pre></td></tr></table></figure>
+
+<h4 id="五、常见的指标"><a href="#五、常见的指标" class="headerlink" title="五、常见的指标"></a>五、常见的指标</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 计算加载时间</span></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">getPerformanceTiming</span>(<span class="params"></span>) </span>&#123;</span><br><span class="line">    <span class="keyword">var</span> t = performance.timing</span><br><span class="line">    <span class="keyword">var</span> times = &#123;&#125;</span><br><span class="line">    <span class="comment">// 页面加载完成的时间，用户等待页面可用的时间</span></span><br><span class="line">    times.loadPage = t.loadEventEnd - t.navigationStart</span><br><span class="line">    <span class="comment">// 解析 DOM 树结构的时间</span></span><br><span class="line">    times.domReady = t.domComplete - t.responseEnd</span><br><span class="line">    <span class="comment">// 重定向的时间</span></span><br><span class="line">    times.redirect = t.redirectEnd - t.redirectStart</span><br><span class="line">    <span class="comment">// DNS 查询时间</span></span><br><span class="line">    times.lookupDomain = t.domainLookupEnd - t.domainLookupStart</span><br><span class="line">    <span class="comment">// 读取页面第一个字节的时间</span></span><br><span class="line">    times.ttfb = t.responseStart - t.navigationStart</span><br><span class="line">    <span class="comment">// 资源请求加载完成的时间</span></span><br><span class="line">    times.request = t.responseEnd - t.requestStart</span><br><span class="line">    <span class="comment">// 执行 onload 回调函数的时间</span></span><br><span class="line">    times.loadEvent = t.loadEventEnd - t.loadEventStart</span><br><span class="line">    <span class="comment">// DNS 缓存时间</span></span><br><span class="line">    times.appcache = t.domainLookupStart - t.fetchStart</span><br><span class="line">    <span class="comment">// 卸载页面的时间</span></span><br><span class="line">    times.unloadEvent = t.unloadEventEnd - t.unloadEventStart</span><br><span class="line">    <span class="comment">// TCP 建立连接完成握手的时间</span></span><br><span class="line">    times.connect = t.connectEnd - t.connectStart</span><br><span class="line">    <span class="keyword">return</span> times</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="性能工具"><a href="#性能工具" class="headerlink" title="性能工具"></a>性能工具</h2><p>页面性能的评估与监控有很多工具，下面简单介绍几个常用的工具：</p>
+<ul>
+<li><p>Page Speed: 谷歌开发的分析和优化网页的工具，可以作为浏览器插件使用　　</p>
+</li>
+<li><p>WebPageTest：一款非常优秀的网页前端性能测试工具。使用 WebPagetest，你可以详细掌握网站加载过程中的瀑布流、性能得分、元素分布、视图分析等数据。其中比较直观的视图分析功能可以直接看到页面加载各个阶段的截屏。国内也有利用 WebPagetest 搭建的性能测试平台，推荐使用阿里测。　</p>
+</li>
+<li><p>PhantomJS：自动化监测，模拟Phantom JS 是一个服务器端的 JavaScript API 的 WebKit，基于它可以轻松实现 web 自动化测试。类似的有berserkJS。但是都是服务器模拟测试，不能监控用户真实环境。</p>
+</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://github.com/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" title="前端性能监控" target="_blank" rel="external">https://github.com/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/only-twj520Q" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/only-twj520Q.github.io/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/only-twj520Q" target="_blank"><span class="text-dark">Sunny_杰少</span><small class="ml-1x">一枚帝都程序猿</small></a></h3>
+        <div>喜欢唱，不喜欢跳，喜欢篮球，但不喜欢rap的宅男</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    <li class="prev">
+      <a href="/only-twj520Q.github.io/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/" title="canvas和img日常转换操作"><i class="icon icon-angle-left" aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+    </li>
+    
+    
+    <li class="next">
+      <a href="/only-twj520Q.github.io/2019/02/12/%E5%AE%B9%E6%98%93%E6%B7%B7%E6%B7%86%E7%9A%84%E5%85%83%E7%B4%A0%E4%BD%8D%E7%BD%AE%E5%92%8C%E5%A4%A7%E5%B0%8F%E5%B1%9E%E6%80%A7/" title="容易混淆的元素位置和大小属性"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/only-twj520Q.github.io/images/donate/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/only-twj520Q.github.io/images/donate/wechatpayimg.jpg" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/only-twj520Q" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/u/6356069422" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/profile.php?id=100041542582495" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/only-twj520Q.github.io/js/plugin.min.js"></script>
+<script src="/only-twj520Q.github.io/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/only-twj520Q.github.io/',
+        CONTENT_URL: '/only-twj520Q.github.io/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/only-twj520Q.github.io/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+<script src="//cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js"></script>
+<script>
+var gitment = new Gitment({
+  // id默认为当前页面url，如果url后带参数或锚点，gitment要重新初始化
+  // https://github.com/imsun/gitment/issues/55
+  // 解决方案：id:window.location.pathname,或者将id设置为当前页面标题
+  id: '前端性能监控', 
+  owner: '32264536', // 可以是你的GitHub用户名，也可以是github id
+  repo: '',
+  oauth: {
+    client_id: '',
+    client_secret: '',
+  }
+})
+gitment.render('comments')
+</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>

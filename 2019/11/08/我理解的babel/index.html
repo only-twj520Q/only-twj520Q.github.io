@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>我理解的babel | Hexo</title>
+  <meta name="description" content="前言什么是babel？你可以理解它就是一个语法转器，简单来说就是 ES6、ES7等等的新语法转化为ES5或能让低端浏览器正常运行的代码。比如我们经常使用的async、promise语法，在低端浏览器上可能就无法使用，会引起故障，但是只要我们合理使用babel，我们就可以放心大胆地使用新语法。 下面阐述的内容都是基于Babel 7的使用和总结，因babel 6 和babel 7在使用上存在较大差异，">
+<meta name="keywords" content="打包构建">
+<meta property="og:type" content="article">
+<meta property="og:title" content="我理解的babel">
+<meta property="og:url" content="https:&#x2F;&#x2F;github.com&#x2F;2019&#x2F;11&#x2F;08&#x2F;%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel&#x2F;index.html">
+<meta property="og:site_name" content="twj的个人小站">
+<meta property="og:description" content="前言什么是babel？你可以理解它就是一个语法转器，简单来说就是 ES6、ES7等等的新语法转化为ES5或能让低端浏览器正常运行的代码。比如我们经常使用的async、promise语法，在低端浏览器上可能就无法使用，会引起故障，但是只要我们合理使用babel，我们就可以放心大胆地使用新语法。 下面阐述的内容都是基于Babel 7的使用和总结，因babel 6 和babel 7在使用上存在较大差异，">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https:&#x2F;&#x2F;img.ikstatic.cn&#x2F;MTU3MzczMTMxOTQ5OCM1MzkjanBn.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;img.ikstatic.cn&#x2F;MTU3MzczMTQyMTY3MiM4NjEjanBn.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;img.ikstatic.cn&#x2F;MTU3MzczMTU1MzU4NCMgIDQjanBn.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;img.ikstatic.cn&#x2F;MTU3MzczMTcyNjEwNyM2NTIjanBn.jpg">
+<meta property="og:image" content="https:&#x2F;&#x2F;img.ikstatic.cn&#x2F;MTU3MzczMTg4MTc5MyM2MjUjanBn.jpg">
+<meta property="og:updated_time" content="2019-11-22T06:44:24.816Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https:&#x2F;&#x2F;img.ikstatic.cn&#x2F;MTU3MzczMTMxOTQ5OCM1MzkjanBn.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://github.com/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/index.html">
+  
+    <link rel="alternate" href="/atom.xml" title="twj的个人小站" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png" type="image/x-icon">
+  
+  <link rel="stylesheet" href="/only-twj520Q.github.io/css/style.css">
+  
+  
+    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitment@0.0.3/style/default.min.css">
+  
+  
+  
+</head>
+
+
+<body class="main-center" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/only-twj520Q" target="_blank">
+          <img class="img-circle img-rotate" src="/only-twj520Q.github.io/images/avatar.jpeg" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">Sunny_杰少</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">一枚帝都程序猿</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Beijing, China</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav ">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/only-twj520Q.github.io/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/only-twj520Q.github.io/archives">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/only-twj520Q.github.io/categories">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/only-twj520Q.github.io/tags">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-repository">
+          <a href="/only-twj520Q.github.io/repository">
+            
+            <i class="icon icon-project"></i>
+            
+            <span class="menu-title">项目</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-books">
+          <a href="/only-twj520Q.github.io/books">
+            
+            <i class="icon icon-book-fill"></i>
+            
+            <span class="menu-title">书单</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/only-twj520Q.github.io/links">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-about">
+          <a href="/only-twj520Q.github.io/about">
+            
+            <i class="icon icon-cup-fill"></i>
+            
+            <span class="menu-title">关于</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/only-twj520Q" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/u/6356069422" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/profile.php?id=100041542582495" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>欢迎交流与分享经验!</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">8</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/Redux/" rel="tag">Redux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" rel="tag">性能优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" rel="tag">打包构建</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/only-twj520Q.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" rel="tag">设计模式</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/only-twj520Q.github.io/tags/JavaScript/" style="font-size: 14px;">JavaScript</a> <a href="/only-twj520Q.github.io/tags/Redux/" style="font-size: 13px;">Redux</a> <a href="/only-twj520Q.github.io/tags/%E6%80%A7%E8%83%BD%E4%BC%98%E5%8C%96/" style="font-size: 13px;">性能优化</a> <a href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" style="font-size: 13px;">打包构建</a> <a href="/only-twj520Q.github.io/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" style="font-size: 13px;">设计模式</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/11/">十一月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/03/">三月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/only-twj520Q.github.io/archives/2019/02/">二月 2019</a><span class="archive-list-count">5</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/" class="title">我理解的babel</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-11-08T07:12:55.975Z" itemprop="datePublished">2019-11-08</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/03/24/%E5%BC%82%E6%AD%A5%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" class="title">异步错误的获取</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-03-24T05:47:16.101Z" itemprop="datePublished">2019-03-24</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/03/09/Promise%E6%9D%82%E8%B0%88/" class="title">Promise杂谈</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-03-09T05:34:08.260Z" itemprop="datePublished">2019-03-09</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/02/12/canvas%E5%92%8Cimg%E6%97%A5%E5%B8%B8%E8%BD%AC%E6%8D%A2%E6%93%8D%E4%BD%9C/" class="title">canvas和img日常转换操作</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+              </p>
+              <p class="item-title">
+                <a href="/only-twj520Q.github.io/2019/02/12/%E5%89%8D%E7%AB%AF%E6%80%A7%E8%83%BD%E7%9B%91%E6%8E%A7/" class="title">前端性能监控</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2019-02-12T07:50:28.691Z" itemprop="datePublished">2019-02-12</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-我理解的babel" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header">
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      我理解的babel
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/only-twj520Q.github.io/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/" class="article-date">
+	  <time datetime="2019-11-08T07:12:55.975Z" itemprop="datePublished">2019-11-08</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/only-twj520Q.github.io/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/only-twj520Q.github.io/tags/%E6%89%93%E5%8C%85%E6%9E%84%E5%BB%BA/" rel="tag">打包构建</a>
+  </span>
+
+
+        
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/only-twj520Q.github.io/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/#comments" class="article-comment-link">评论</a></span>
+        
+	
+		<span class="post-wordcount hidden-xs" itemprop="wordCount">字数统计: 3.4k(字)</span>
+	
+	
+		<span class="post-readcount hidden-xs" itemprop="timeRequired">阅读时长: 12(分)</span>
+	
+
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody">
+      
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>什么是babel？你可以理解它就是一个语法转器，简单来说就是 ES6、ES7等等的新语法转化为ES5或能让低端浏览器正常运行的代码。比如我们经常使用的async、promise语法，在低端浏览器上可能就无法使用，会引起故障，但是只要我们合理使用babel，我们就可以放心大胆地使用新语法。</p>
+<p>下面阐述的内容都是基于Babel 7的使用和总结，因babel 6 和babel 7在使用上存在较大差异，所以需要提前说明一下。</p>
+<h2 id="核心原理"><a href="#核心原理" class="headerlink" title="核心原理"></a>核心原理</h2><p>这边简单介绍一下babel的工作原理，其实就是利用了抽象语法树，又称AST。所有的babel插件也是基于AST。</p>
+<h4 id="Babel的处理步骤"><a href="#Babel的处理步骤" class="headerlink" title="Babel的处理步骤"></a>Babel的处理步骤</h4><ul>
+<li><p>解析。将源代码变成AST。babel的解析器使用的是babylon。在解析过程中有两个阶段：<strong>词法分析</strong>和<strong>语法分析</strong>，词法分析阶段把字符串形式的代码转换为<strong>令牌</strong>（tokens）流，令牌类似于AST中节点；而语法分析阶段则会把一个令牌流转换成 AST的形式，同时这个阶段会把令牌中的信息转换成AST的表述结构。</p>
+</li>
+<li><p>转化。操作AST，去改变代码。babel转化器使用的是babel-traverse。babel使用提供的API对AST进行深度优先遍历，在此过程中对节点进行添加、更新及移除操作。</p>
+</li>
+<li><p>生成。将更改后的AST，再变回代码。babel生成器使用的是babel-generator。将经过转换的AST通过babel-generator再转换成js代码，过程就是深度优先遍历整个AST，然后构建可以表示转换后代码的字符串。</p>
+</li>
+</ul>
+<p>我们编写的代码在编译阶段就被解析成AST，为什么要转化成AST，是因为方便计算机更好地理解代码，方便开发人员更好地操作代码。因为对于计算机或者编辑器而言，代码其实本质上就是字符串。</p>
+<p>可以使用这个链接<a href="https://astexplorer.net/" target="_blank" rel="noopener">在线测试</a>观察代码生成的AST是什么样的。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"type"</span>: <span class="string">"Program"</span>,</span><br><span class="line">    <span class="string">"start"</span>: <span class="number">0</span>,</span><br><span class="line">    <span class="string">"end"</span>: <span class="number">52</span>,</span><br><span class="line">    <span class="string">"body"</span>: [...]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>你会发现抽象语法树中不同层级有着相似的结构，这样的结构叫做节点，一个AST是由多个或单个这样的节点组成，节点内部还可以嵌套有多个这样的子节点。</p>
+<h4 id="实际使用"><a href="#实际使用" class="headerlink" title="实际使用"></a>实际使用</h4><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> * <span class="keyword">as</span> babylon <span class="keyword">from</span> <span class="string">'babylon'</span>;</span><br><span class="line"><span class="keyword">import</span> traverse <span class="keyword">from</span> <span class="string">'babel-traverse'</span>;</span><br><span class="line"><span class="keyword">import</span> generate <span class="keyword">from</span> <span class="string">'babel-generator'</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">const</span> code = <span class="string">`function double(x) &#123;</span></span><br><span class="line"><span class="string">  return x;</span></span><br><span class="line"><span class="string">&#125;`</span>;</span><br><span class="line"><span class="keyword">const</span> ast = babylon.parse(code);</span><br><span class="line">traverse(ast, &#123;</span><br><span class="line">  enter(path) &#123;</span><br><span class="line">    <span class="keyword">if</span> (</span><br><span class="line">      path.node.type === <span class="string">"Identifier"</span> &amp;&amp;</span><br><span class="line">      path.node.name === <span class="string">"x"</span></span><br><span class="line">    ) &#123;</span><br><span class="line">      path.node.name = <span class="string">"xx"</span>;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;);</span><br><span class="line"><span class="keyword">const</span> output = generate(ast, code);</span><br><span class="line"><span class="built_in">console</span>.log(<span class="string">'output'</span>, output)</span><br><span class="line"></span><br><span class="line"><span class="comment">// 输出结果</span></span><br><span class="line">&#123;</span><br><span class="line">  code: <span class="string">"function double(xx) &#123;↵  return xx;↵&#125;"</span></span><br><span class="line">  map: <span class="literal">null</span></span><br><span class="line">  rawMappings: <span class="literal">null</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="基本用法"><a href="#基本用法" class="headerlink" title="基本用法"></a>基本用法</h2><p>一般而言，babel的使用存在两种方式。</p>
+<ul>
+<li>命令行</li>
+<li>结合构建工具</li>
+</ul>
+<p>通常说来，后者更常见。如果结合webpack使用，我们需要在<code>webpack.config.js</code>中的配置项<code>rules</code>属性中配置<code>babel-loader</code>，然后在项目根目录中新增<code>.babelrc</code>文件，这个文件就是对babel的配置。</p>
+<p><code>webpack.config.js</code>部分配置</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">module</span>: &#123;</span><br><span class="line">  rules: [</span><br><span class="line">    &#123;</span><br><span class="line">      test: <span class="regexp">/\.js$/</span>,</span><br><span class="line">      include: path.resolve(<span class="string">'src'</span>),</span><br><span class="line">      loader: <span class="string">'babel-loader'</span></span><br><span class="line">    &#125;,</span><br><span class="line">    ...</span><br><span class="line">  ]</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>.babelrc</code>部分配置</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    [ </span><br><span class="line">      <span class="string">"@babel/preset-env"</span>, &#123;</span><br><span class="line">        <span class="string">"targets"</span>: &#123;</span><br><span class="line">          <span class="string">"chrome"</span>: <span class="string">"52"</span>,</span><br><span class="line">          <span class="string">"ie"</span>: <span class="string">"8"</span></span><br><span class="line">        &#125;,</span><br><span class="line">        <span class="string">"useBuiltIns"</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="string">"corejs"</span>: <span class="literal">false</span></span><br><span class="line">    	&#125;</span><br><span class="line">    ]</span><br><span class="line">  ]</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>babel-loader</code>使用前需要使用<code>npm</code>安装，并且它默认会读取根目录下的<code>.babelrc</code>的配置，或者直接在<code>babel-loader</code>的配置options也是可以的。注意<code>.babelrc</code>文件的内容格式是JSON。</p>
+<h2 id="常见名词"><a href="#常见名词" class="headerlink" title="常见名词"></a>常见名词</h2><h4 id="babel-core"><a href="#babel-core" class="headerlink" title="@babel/core"></a>@babel/core</h4><p>babel的核心包，它主要的作用就是编译。</p>
+<h4 id="babel-cli"><a href="#babel-cli" class="headerlink" title="@babel/cli"></a>@babel/cli</h4><p>只有@babel/core是无法在命令行使用这些功能的，@babel/cli支持你直接在命令行中编译代码。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./node_modules/.bin/babel src --out-dir lib</span><br></pre></td></tr></table></figure>
+
+<p>上面的命令会编译src目录下的所有js代码，并编译成最终的代码（<code>babel.config.js</code>或者<code>.babelrc</code>配置的），并输出到lib目录下。<code>--out-dir</code>代表输出到哪个目录下。</p>
+<h4 id="babel-node"><a href="#babel-node" class="headerlink" title="@babel/node"></a>@babel/node</h4><p><code>babel-node</code> 命令并非独立安装，在babel 7以前，需要通过安装 <code>babel-cli</code> 包获得。而在babel 7以后，babel 的模块被拆分。因此需要安装 <code>@babel/core</code>和 <code>@babel/node</code> 两个包来获取。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 安装</span></span><br><span class="line">npm i -g @babel/core @babel/node</span><br><span class="line"><span class="comment">// 使用</span></span><br><span class="line">babel-node test.js</span><br></pre></td></tr></table></figure>
+
+<h4 id="babel-polyfill"><a href="#babel-polyfill" class="headerlink" title="@babel/polyfill"></a>@babel/polyfill</h4><p>babel默认只转化js语法，比如对let ，const，class等。它不转换新的API，比如Set、Map、Reflect、Symbol、Promise 等全局对象，包括全局对象上的方法，比如<code>Object.assign</code>。</p>
+<p>我们使用babel官网提供的的<code>try out</code>功能做演示。</p>
+<p><img src="https://img.ikstatic.cn/MTU3MzczMTMxOTQ5OCM1MzkjanBn.jpg" alt=""></p>
+<p>如图，我们可以看到babel插件默认只会对class，箭头函数这些js语法糖进行转化。但是对新的API它默认不会进行支持，比如上图中的Promise。所以我们可以引入<code>@babel/polyfill</code>。这个库包含了<code>core-js</code>和<code>regenerator-runtime</code>。它是对完整的ES6环境的模拟，我们需要在入口文件或者所有代码的前面引入这个库。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> <span class="string">'@babel/polyfill'</span></span><br><span class="line"><span class="comment">// 等同于</span></span><br><span class="line"><span class="keyword">import</span> <span class="string">"core-js/shim"</span>;</span><br><span class="line"><span class="keyword">import</span> <span class="string">"regenerator-runtime/runtime"</span>;</span><br></pre></td></tr></table></figure>
+
+<p>但是这个库有两个很不可忽略的问题。</p>
+<ul>
+<li>体积太大。在非压缩的前提下，能达到几百K，而且如果我们只是使用了其中某个特性的情况下，这会造成很大的浪费。</li>
+<li>会污染全局变量，因为它会增加很多全局变量API，或者在很多类的原型链上都作了修改，从而实现增加实例方法。如果我们开发的也是一个类库供其他开发者使用，这种情况就会变得非常不可控。</li>
+</ul>
+<p>至于说解决方案下面会提到。</p>
+<h2 id="核心使用"><a href="#核心使用" class="headerlink" title="核心使用"></a>核心使用</h2><p>需要记住的是，babel本身不具有任何转化能力，我们把它转化的功能都分解到一个个插件中去。所以，当我们不配置任何插件的时候，输入和输出的代码都是一样的。</p>
+<p>在配置文件中，我们主要是由两个配置项，分别是预设preset和插件plugins。</p>
+<p>新的babel 7已经使用了新的插件语法。</p>
+<h3 id="预设preset"><a href="#预设preset" class="headerlink" title="预设preset"></a>预设preset</h3><p>先解释一下什么是预设，在没有预设这个概念之前，当我们需要使用箭头函数的时候，我们使用<code>@babel/plugin-transform-arrow-functions</code>插件，它的作用就是将ES6的箭头函数转换成普通函数，但是ES6的语法太多了，如果我们单纯依靠引入一个个依赖的插件就太麻烦，而且容易出错。所以预设的出现就解决了这个问题，它可以理解为插件的组合，比如<code>@babel/preset-es2015</code>是对整个ES6语法的插件集合，还有<code>@babel/preset-es2016</code>等等，不过现在这些类似的这些预设官方也不推荐使用了，推荐使用<code>@babel/preset-env</code>。目前常见的预设有<code>@babel/preset-env</code>，<code>@babel/preset-react</code>，<code>@babel/preset-typescript</code>。</p>
+<h4 id="babel-preset-env（重点）"><a href="#babel-preset-env（重点）" class="headerlink" title="@babel/preset-env（重点）"></a>@babel/preset-env（重点）</h4><p>重点介绍<code>@babel/preset-env</code>。这是一个能根据配置的运行环境特点，为代码做相应和必要的编译，同时支持浏览器和node，比如如果你要求的运行环境浏览器版本比较低，转化的代码可能会比较多，如果要求支持的是高版本浏览器，可能你都不需要转化ES6的语法，从而节省了很多空间。如果不写任何配置项，env 等价于 latest，也等价于<code>es2015 + es2016 + es2017</code> 三个相加(不包含 <code>stage-x</code> 中的插件)。env 包含的插件列表维护在<a href="https://github.com/babel/babel-preset-env/blob/master/data/plugin-features.js">这里</a></p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 浏览器</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    [<span class="string">"@babel/preset-env"</span>, &#123;</span><br><span class="line">      <span class="string">"targets"</span>: &#123;</span><br><span class="line">        <span class="string">"browsers"</span>: [<span class="string">"last 2 versions"</span>, <span class="string">"safari &gt;= 7"</span>]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">// node</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    [<span class="string">"@babel/preset-env"</span>, &#123;</span><br><span class="line">      <span class="string">"targets"</span>: &#123;</span><br><span class="line">        <span class="string">"node"</span>: <span class="string">"6.10"</span></span><br><span class="line">      &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>此外babel 7的还有一个重要的变化是删除了<code>stage-x</code>的相关插件，这是一个实验性的语法插件，所有针对处于标准提案阶段的功能所编写的预设（stage preset）都已被弃用。<code>@babel/preset-env</code>将只支持到<code>stage-4</code>。stage 是向下兼容 0&gt;1&gt;2&gt;3&gt;4 所包含的插件数量依次减少。</p>
+<p>简单说明一下，TC39 将提案分为以下几个阶段：</p>
+<ul>
+<li>Stage 0 - 设想（Strawman）：只是一个想法，可能有 Babel插件。</li>
+<li>Stage 1 - 建议（Proposal）：这是值得跟进的。</li>
+<li>Stage 2 - 草案（Draft）：初始规范。</li>
+<li>Stage 3 - 候选（Candidate）：完成规范并在浏览器上初步实现。</li>
+<li>Stage 4 - 完成（Finished）：将添加到下一个年度版本发布中。</li>
+</ul>
+<h4 id="useBuiltIns配置"><a href="#useBuiltIns配置" class="headerlink" title="useBuiltIns配置"></a>useBuiltIns配置</h4><p>这是一个<code>preset-env</code>的重要配置选项，它的出现是为了解决上述提到<code>@babel/polyfill</code>的缺陷，它将会自动检测语法帮你require你代码中使用的部分polyfill。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  <span class="string">"presets"</span>: [</span><br><span class="line">    [<span class="string">"@babel/preset-env"</span>, &#123;</span><br><span class="line">      <span class="string">"useBuiltIns"</span>: <span class="string">"usage"</span>,</span><br><span class="line">      <span class="string">"corejs"</span>: <span class="number">2</span>,</span><br><span class="line">      <span class="string">"targets"</span>: &#123;</span><br><span class="line">        <span class="string">"browsers"</span>: [<span class="string">"last 2 versions"</span>, <span class="string">"safari &gt;= 7"</span>]</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">  ]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个字段的可选值包括：usage、entry 和 false， 默认为 false，表示不对 polyfills 处理。</p>
+<ul>
+<li>usage：它会在你使用到 ES6 新特性时，自动从<code>core-js</code>中添加相关的模块和方法，不会造成全局污染。</li>
+<li>entry：需要在入口使用<code>import &quot;@babel/polyfill&quot;</code>，将 polyfill 拆分引入，仅引入有浏览器不支持的 polyfill</li>
+</ul>
+<p><img src="https://img.ikstatic.cn/MTU3MzczMTQyMTY3MiM4NjEjanBn.jpg" alt="image-20191114175843871"></p>
+<p>如上图，配置了entry以后，<code>import @babel/polyfill</code>会被分拆成很多<code>require(&quot;core-js/modules/xxx&quot;)</code>，它其实会根据<code>@babel/preset-env</code>配置的目标环境将一个大的库分拆引入。事实上，<code>@babel/polyfill</code>这个包本身是没有内容的，它依赖于<code>core-js</code>和<code>regenerator-runtime</code>这两个包，这两个包提供了ES6规范的运行时环境。因此当我们不需要按需polyfill时直接引入<code>@babel-polyfill</code>就行了，它会把<code>core-js</code>和<code>regenerator-runtime</code>全部导入，当我们配置了entry以后，它会根据目标环境自动按需引入<code>core-js</code>和<code>regenerator-runtime</code>。</p>
+<p><img src="https://img.ikstatic.cn/MTU3MzczMTU1MzU4NCMgIDQjanBn.jpg" alt=""></p>
+<p>如上图，当配置了usage以后，我们无需手动<code>import &#39;@babel/polyfill&#39;</code>，它会根据我们的实际代码结合配置的目标环境，自动引入相应的库。</p>
+<p>所以，比较这两个配置字段，我更倾向于使用usage这种方式，事实上，它才是真正做到了按需引入。</p>
+<h3 id="插件plugin"><a href="#插件plugin" class="headerlink" title="插件plugin"></a>插件plugin</h3><p>插件的作用是为了实现某个具体功能，比如预设不能支持的，比如<code>@babel/plugin-proposal-decorators</code>是为了解决装饰器的问题，比如<code>@babel/plugin-syntax-dynamic-import</code>是为了解决webpack动态引入某个模块的问题。</p>
+<h4 id="babel-plugin-transform-runtime（重点）"><a href="#babel-plugin-transform-runtime（重点）" class="headerlink" title="@babel/plugin-transform-runtime（重点）"></a>@babel/plugin-transform-runtime（重点）</h4><p>这个插件能解决<code>@babel/polyfill</code>提供的类或者实例方法污染全局作用域的情况的。它的作用和上面的useBuiltIns很类似。</p>
+<p><code>@babel/plugin-transform-runtime</code>插件是为了解决</p>
+<ul>
+<li>运行时引入，为了解决多个文件重复引用相同helpers </li>
+<li>局部引入，为了解决新API方法全局污染</li>
+</ul>
+<p><img src="https://img.ikstatic.cn/MTU3MzczMTcyNjEwNyM2NTIjanBn.jpg" alt=""></p>
+<p><img src="https://img.ikstatic.cn/MTU3MzczMTg4MTc5MyM2MjUjanBn.jpg" alt=""></p>
+<p>对比上面的两个图，我们用class举例，可以发现，如果使用这个插件，它会在每个模块的内部重复定义这个相同的函数方法，虽然最后的结果也没有问题，但是会造成出现很多重复代码，并且增大了体积。而如果使用了插件以后，我们发现从定义方法改成引用，那重复定义就变成了重复引用，就不存在代码重复的问题了。如上图，可以发现，class这个helper 就是通过 <code>require</code> 引入的，这样就不会存在代码重复的问题了。</p>
+<p>在使用 <code>babel-plugin-transform-runtime</code> 的时候必须把 <code>babel-runtime</code> 当做依赖。</p>
+<p> <code>babel-runtime</code>内部集成了</p>
+<ul>
+<li><code>core-js</code>：转换一些内置类 (<code>Promise</code>, <code>Symbols</code>等等) 和静态方法 (<code>Array.from</code> 等)。绝大部分转换是这里做的，自动引入。</li>
+<li><code>regenerator</code>：作为 <code>core-js</code> 的拾遗补漏，主要是对 <code>generator/yield</code> 和 <code>async/await</code> 两组的支持。当代码中有使用 <code>generators/async</code> 时自动引入。</li>
+<li><code>helpers</code>： 如上面的 <code>asyncToGenerator</code> 就是其中之一，其他还有如 <code>jsx</code>, <code>classCallCheck</code> 等等，可以查看 <a href="https://github.com/babel/babel/blob/6.x/packages/babel-helpers/src/helpers.js">babel-helpers</a>。</li>
+</ul>
+<p>但是这个插件也有<strong>缺点：</strong><code>babel-plugin-transform-runtime</code> <strong>不支持</strong> 类的实例方法 (比如数组的<code>filter</code>方法等)</p>
+<p>还有一个需要<strong>注意</strong>的是，我发现默认情况下这个插件不会对ES6新的API进行polyfill，就是说它默认不会转化新的特性比如Promise、<code>Object.assign</code>。所以我们还需要配置corejs这个字段，并安装对应的依赖<code>@babel/runtime-corejs2</code>。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">npm install --save @babel/runtime-corejs2</span><br><span class="line"></span><br><span class="line">&#123;</span><br><span class="line"> <span class="string">"plugins"</span>: [</span><br><span class="line">    [</span><br><span class="line">      <span class="string">"@babel/plugin-transform-runtime"</span>,</span><br><span class="line">      &#123;</span><br><span class="line">        <span class="string">"helpers"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="string">"regenerator"</span>: <span class="literal">true</span>,</span><br><span class="line">        <span class="string">"useESModules"</span>: <span class="literal">false</span>,</span><br><span class="line">        <span class="string">"corejs"</span>: <span class="number">2</span></span><br><span class="line">      &#125;</span><br><span class="line">    ]</span><br><span class="line">	] </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h3><p>当plugins 与 presets 同时存在的情况，执行顺序如下</p>
+<blockquote>
+<p>这意味着如果两个转换插件都将处理程序的某个代码片段，则将根据转换插件或 preset 的排列顺序依次执行。</p>
+<ul>
+<li>先执行 plugins 的配置项,再执行 Preset 的配置项；</li>
+<li>plugins 配置项，按照声明顺序执行。</li>
+<li>Preset 配置项，按照声明逆序执行。</li>
+</ul>
+</blockquote>
+<h3 id="Babel插件方案对比"><a href="#Babel插件方案对比" class="headerlink" title="Babel插件方案对比"></a>Babel插件方案对比</h3><table>
+<thead>
+<tr>
+<th align="center">方案</th>
+<th align="center">优点</th>
+<th align="center">缺点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">@babel/plugin-transform-runtime</td>
+<td align="center">按需引入, 打包体积小</td>
+<td align="center">不能兼容实例方法</td>
+</tr>
+<tr>
+<td align="center">@babel/polyfill</td>
+<td align="center">完整模拟 ES6 环境</td>
+<td align="center">打包体积过大, 污染全局对象和内置的对象原型</td>
+</tr>
+<tr>
+<td align="center">@babel/preset-env</td>
+<td align="center">按需引入, 可配置性高，并且通过配置useBuiltIns实现按需加载@babel/polyfill</td>
+<td align="center">暂未发现</td>
+</tr>
+</tbody></table>
+<h3 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h3><p><code>@babel/plugin-transform-runtime</code>和<code>useBuiltIns</code>配置可以解决替代@babel/polyfill。</p>
+<h2 id="babel使用总结"><a href="#babel使用总结" class="headerlink" title="babel使用总结"></a>babel使用总结</h2><p>综上，我个人对于babel 7的配置方案总结如下</p>
+<ul>
+<li>@babel/preset-env + targets + useBuiltins: usage</li>
+<li>@babel/plugin-transform-runtime</li>
+<li>引入必要的plugin</li>
+</ul>
+
+      
+    </div>
+    <div class="article-footer">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://github.com/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/" title="我理解的babel" target="_blank" rel="external">https://github.com/2019/11/08/%E6%88%91%E7%90%86%E8%A7%A3%E7%9A%84babel/</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/only-twj520Q" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/only-twj520Q.github.io/images/avatar.jpeg" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/only-twj520Q" target="_blank"><span class="text-dark">Sunny_杰少</span><small class="ml-1x">一枚帝都程序猿</small></a></h3>
+        <div>喜欢唱，不喜欢跳，喜欢篮球，但不喜欢rap的宅男</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+  <div class="bar-inner">
+  
+  <ul class="pager pull-left">
+    
+    
+    <li class="next">
+      <a href="/only-twj520Q.github.io/2019/03/24/%E5%BC%82%E6%AD%A5%E9%94%99%E8%AF%AF%E5%A4%84%E7%90%86/" title="异步错误的获取"><span>下一篇&nbsp;&nbsp;</span><i class="icon icon-angle-right" aria-hidden="true"></i></a>
+    </li>
+    
+    
+  </ul>
+  
+  
+  <!-- Button trigger modal -->
+  <button type="button" class="btn btn-fancy btn-donate pop-onhover bg-gradient-warning" data-toggle="modal" data-target="#donateModal"><span>赏</span></button>
+  <!-- <div class="wave-icon wave-icon-danger btn-donate" data-toggle="modal" data-target="#donateModal">
+    <div class="wave-circle"><span class="icon"><i class="icon icon-bill"></i></span></div>
+  </div> -->
+  
+  
+  <div class="bar-right">
+    
+    <div class="share-component" data-sites="weibo,qq,wechat,facebook,twitter" data-mobile-sites="weibo,qq,qzone"></div>
+    
+  </div>
+  </div>
+</nav>
+  
+<!-- Modal -->
+<div class="modal modal-center modal-small modal-xs-full fade" id="donateModal" tabindex="-1" role="dialog">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content donate">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+      <div class="modal-body">
+        <div class="donate-box">
+          <div class="donate-head">
+            <p>感谢您的支持，我会继续努力的!</p>
+          </div>
+          <div class="tab-content">
+            <div role="tabpanel" class="tab-pane fade active in" id="alipay">
+              <div class="donate-payimg">
+                <img src="/only-twj520Q.github.io/images/donate/alipayimg.jpg" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开支付宝扫一扫，即可进行扫码打赏哦</p>
+            </div>
+            <div role="tabpanel" class="tab-pane fade" id="wechatpay">
+              <div class="donate-payimg">
+                <img src="/only-twj520Q.github.io/images/donate/wechatpayimg.jpg" alt="扫码支持" title="扫一扫" />
+              </div>
+              <p class="text-muted mv">扫码打赏，你说多少就多少</p>
+              <p class="text-grey">打开微信扫一扫，即可进行扫码打赏哦</p>
+            </div>
+          </div>
+          <div class="donate-footer">
+            <ul class="nav nav-tabs nav-justified" role="tablist">
+              <li role="presentation" class="active">
+                <a href="#alipay" id="alipay-tab" role="tab" data-toggle="tab" aria-controls="alipay" aria-expanded="true"><i class="icon icon-alipay"></i> 支付宝</a>
+              </li>
+              <li role="presentation" class="">
+                <a href="#wechatpay" role="tab" id="wechatpay-tab" data-toggle="tab" aria-controls="wechatpay" aria-expanded="false"><i class="icon icon-wepay"></i> 微信支付</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/only-twj520Q" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://weibo.com/u/6356069422" target="_blank" title="Weibo" data-toggle=tooltip data-placement=top><i class="icon icon-weibo"></i></a></li>
+        
+        <li><a href="https://www.facebook.com/profile.php?id=100041542582495" target="_blank" title="Facebook" data-toggle=tooltip data-placement=top><i class="icon icon-facebook"></i></a></li>
+        
+    </ul>
+
+    <div class="copyright">
+    	
+        <div class="publishby">
+        	Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+        </div>
+    </div>
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+<script>
+window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+</script>
+<script src="/only-twj520Q.github.io/js/plugin.min.js"></script>
+<script src="/only-twj520Q.github.io/js/application.js"></script>
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/only-twj520Q.github.io/',
+        CONTENT_URL: '/only-twj520Q.github.io/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/only-twj520Q.github.io/js/insight.js"></script>
+
+
+
+
+
+   
+
+
+
+
+   
+    
+<script src="//cdn.jsdelivr.net/npm/gitment@0.0.3/dist/gitment.browser.min.js"></script>
+<script>
+var gitment = new Gitment({
+  // id默认为当前页面url，如果url后带参数或锚点，gitment要重新初始化
+  // https://github.com/imsun/gitment/issues/55
+  // 解决方案：id:window.location.pathname,或者将id设置为当前页面标题
+  id: '我理解的babel', 
+  owner: '32264536', // 可以是你的GitHub用户名，也可以是github id
+  repo: '',
+  oauth: {
+    client_id: '',
+    client_secret: '',
+  }
+})
+gitment.render('comments')
+</script>
+
+
+
+
+
+
+
+
+
+</body>
+</html>
